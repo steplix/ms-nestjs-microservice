@@ -98,7 +98,8 @@ git push origin develop
 
 ### Getting started
 
-See helloworld folder for real life example. And a better way to start 😁
+See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/develop/helloworld.zip) for real life example. And a better way to start 😁
+
 
 ### Configure
 
