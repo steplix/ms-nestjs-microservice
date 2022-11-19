@@ -30,7 +30,7 @@ Based NodeJs + NestJs microservice.
 
 ### Install
 ```sh
-npm i git+https://<STEPLIX_GITHUB_TOKEN>:x-oauth-basic@github.com/steplix/steplix-microservice.git#develop
+npm i git+https://oauth2:<STEPLIX_GITHUB_TOKEN>@gitlab.com/steplix/nestjs-microservice.git#develop
 ```
 
 Or add next line on your package.json
@@ -38,7 +38,7 @@ Or add next line on your package.json
 {
   ...
   "dependencies": {
-    "@steplix/microservice": "git+https://<STEPLIX_GITHUB_TOKEN>:x-oauth-basic@github.com/steplix/steplix-microservice.git#develop"
+    "@steplix/microservice": "git+https://oauth2:<STEPLIX_GITHUB_TOKEN>@gitlab.com/steplix/nestjs-microservice.git#develop"
     ...
   }
 }
