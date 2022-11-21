@@ -1,10 +1,30 @@
 import { isString, isNumber, isBoolean, isObject } from "lodash";
 import { SetMetadata, ExecutionContext } from "@nestjs/common";
+import { logger } from "../helpers/logger";
+
+//
+// constants
+//
+const timeUnits = {
+  ms: 1,
+  second: 1000,
+  minute: 60000,
+  hour: 3600000,
+  day: 3600000 * 24,
+  week: 3600000 * 24 * 7,
+  month: 3600000 * 24 * 30,
+};
+
+// eslint-disable-next-line
+const regexpTime = /^([\d\.,]+)\s+(\w+)$/;
+const regexpCaseS = /s$/i;
 
 //
 // types
 //
-type CacheOptionFactory = (ctx: ExecutionContext) => Promise<string> | string | number | boolean;
+type CacheKeyOptionFactory = (ctx: ExecutionContext) => Promise<string | undefined> | string | undefined;
+type CacheTimeOptionFactory = (ctx: ExecutionContext) => Promise<number | undefined> | number | undefined;
+type CacheExcludeOptionFactory = (ctx: ExecutionContext) => Promise<boolean | undefined> | boolean | undefined;
 
 //
 // interfaces
@@ -13,17 +33,17 @@ export interface ICacheOptions {
   /**
    * Cache key
    */
-  key?: string | CacheOptionFactory;
+  key?: string | CacheKeyOptionFactory;
 
   /**
    * Cache time in milliseconds
    */
-  time?: number | CacheOptionFactory;
+  time?: number | string | CacheTimeOptionFactory;
 
   /**
    * Indicate if the endpoint is exclude from cache
    */
-  exclude?: boolean | CacheOptionFactory;
+  exclude?: boolean | CacheExcludeOptionFactory;
 }
 
 //
@@ -60,15 +80,15 @@ export function Cache(...args: any[]): Function {
   const keyOrTimeOrOptions: any = args[0] != null ? args[0] : {};
   let options: ICacheOptions = {};
 
-  // Check if arg is string
-  if (isString(keyOrTimeOrOptions)) {
-    // In this case, arg is the cache KEY
-    options.key = keyOrTimeOrOptions;
-  }
   // Check if arg is number
-  else if (isNumber(keyOrTimeOrOptions)) {
+  if (isTime(keyOrTimeOrOptions)) {
     // In this case, arg is the expiration time number
     options.time = keyOrTimeOrOptions;
+  }
+  // Check if arg is string
+  else if (isString(keyOrTimeOrOptions)) {
+    // In this case, arg is the cache KEY
+    options.key = keyOrTimeOrOptions;
   }
   // Check if arg is boolean
   else if (isBoolean(keyOrTimeOrOptions)) {
@@ -81,5 +101,45 @@ export function Cache(...args: any[]): Function {
     options = keyOrTimeOrOptions;
   }
 
+  if (isString(options.time)) {
+    const time = parseTime(options.time);
+
+    options.time = time || undefined;
+
+    if (!time) {
+      logger.warn(`Cant parse string time value [${options.time}] for cache`);
+      delete options.time;
+    }
+  }
+
   return SetMetadata("cache", options);
 }
+
+//
+// helpers
+//
+
+const isTime = (time: number | string): boolean => {
+  return isNumber(time) || regexpTime.test(time);
+};
+
+const parseTime = (time: number | string): number => {
+  if (isNumber(time)) {
+    return time;
+  }
+
+  if (isString(time)) {
+    const split = time.match(regexpTime);
+
+    if (split.length === 3) {
+      const len = parseFloat(split[1]);
+      let unit = split[2].replace(regexpCaseS, "").toLowerCase();
+
+      if (unit === "m") {
+        unit = "ms";
+      }
+      return (len || 1) * (timeUnits[unit] || 0);
+    }
+  }
+  return;
+};

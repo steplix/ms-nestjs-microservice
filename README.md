@@ -23,6 +23,8 @@ Based NodeJs + NestJs microservice.
     * [Documentation][configure-doc]
   + [Communication between microservices][communication-between-microservices]
   + [Interceptors][interceptors]
+  + [Database][database]
+  + [Decorators][decorators]
   + [Logger][logger]
 * [Tests][tests]
 
@@ -44,16 +46,16 @@ Or add next line on your package.json
 }
 ```
 
-### Source code
-```sh
-git clone https://github.com/steplix/steplix-microservice.git
-cd steplix-microservice
-npm i
-```
-
 ### Update
 ```sh
 npm up @steplix/microservice
+```
+
+### Source code
+```sh
+git clone https://gitlab.com/steplix/nestjs-microservice.git
+cd nestjs-microservice
+npm i
 ```
 
 ### Publish
@@ -79,20 +81,30 @@ git push origin develop
 ```
 |
 | -> src
-|    | -> config
-|    | -> constants
-|    | -> entities
-|    |    | -> your-entity-class. Example, "category"
-|    |    | -> category.ts (example)
-|    | -> modules
-|    |    | -> your-module-name. Example, "categories"
-|    |    | -> categories (example)
-|    |    |    | -> controller.ts
-|    |    |    | -> service.ts
-|    |    |    | -> module.ts
-|    | -> app.module.ts
-|    | -> app.ts
-|    | -> main.ts
+|    | -> config                    <- (opcional) Configuraciones especificas del MS
+|    |
+|    | -> constants                 <- (opcional) Constantes especificas del MS
+|    |
+|    | -> entities                  <- (opcional) Entidades mapeadas de la DB
+|    |    | -> your-entity-class.   <- Ej. "pet"
+|    |    | -> pet.ts <--------------------\___/
+|    |
+|    | -> modules                   <- Modulos del MS
+|    |    | -> your-module-name.    <- Ej. "pets"
+|    |    | -> pets <----------------------\____/
+|    |    |    | -> controller.ts   <- Controlador de puntos de entrada
+|    |    |    | -> service.ts      <- Servicio encargado de resolver lo solicitado por el cliente
+|    |    |    | -> module.ts       <- Modulo encargado de mapear todo lo necesario para el correcto funcionamiento de petos
+|    |
+|    | -> app.module.ts             <- Modulo encargado de mapear todo lo necesario para el correcto funcionamiento del MS
+|    |
+|    | -> app.ts                    <- Aplicación de NestJs
+|    |
+|    | -> main.ts                   <- Disparador de la aplicación (punto de inicio)
+|
+| -> ecosystem.config.js            <- Archivo de configuraciones para correr con PM2
+|
+| -> endpoints.insomnia.json        <- Archivo de Insomnia para testeo de los endpoints
 |
 ```
 
@@ -304,7 +316,7 @@ const user = await usersService.patch({
  - feature_toggler
 
 > 
-> 💡 NOTE: NOTE: To configure more services, add the same ones in `config/services.ts` constant `remoteServices`;
+> 💡 NOTE: To configure more services, add the same ones in `config/services.ts` constant `remoteServices`;
 > 
 
 <p align="right">(<a href="#top">go to top</a>)</p>
@@ -312,9 +324,9 @@ const user = await usersService.patch({
 
 #### Interceptors
 
-Authenticate user by JWT
+##### Authenticate user by JWT
 
-```js
+```typescript
 const { RequiredAuthUserInterceptor } = require('@steplix/microservice');
 
 ...
@@ -330,9 +342,9 @@ export class SubscriptionsController {
 }
 ```
 
-Cache controller endpoints
+##### Cache controller endpoints
 
-```js
+```typescript
 const { CacheInterceptor, Cache } = require('@steplix/microservice');
 
 ...
@@ -347,7 +359,7 @@ export class SubscriptionsController {
   ...
   @Get()
   @Cache({
-    time: 6 * 3600000 // 6 hours
+    time: "6 hours"
   })
   getById(@Query query: any) {
     ...
@@ -361,6 +373,13 @@ export class SubscriptionsController {
     ...
   }
   ...
+  @Get()
+  // No cache, for this endpoint
+  @Cache(false)
+  listWrongSubscriptions() {
+    ...
+  }
+  ...
 }
 ```
 
@@ -369,6 +388,200 @@ export class SubscriptionsController {
  - RequiredAuthUserInterceptor
  - AuthUserInterceptor
  - CacheInterceptor
+
+<p align="right">(<a href="#top">go to top</a>)</p>
+
+
+#### Database
+
+For configure credentials, use `.env` file. For example,
+```env
+...
+
+DB_DEBUG=true
+DB_ENABLED=true
+DB_AUTODISCOVER=true
+DB_PASS=WwFFTRDJ7s2RgPWx
+DB_NAME=steplixpp_subscriptions
+DB_HOST=localhost
+DB_USER=root
+
+...
+```
+
+All entities are need mapping on `<micro service root dir>/src/entities`. For example,
+
+Model `<micro service root dir>/src/entities/subscription.ts`
+
+```typescript
+import {
+  Table,
+  Column,
+  PrimaryKey,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
+} from "sequelize-typescript";
+import { ApiProperty } from "@nestjs/swagger";
+import { Model, Remote } from "@steplix/microservice";
+import SubscriptionProduct from "./subscriptionProduct";
+import SubscriptionStatus from "./subscriptionStatus";
+import SubscriptionOrder from "./subscriptionOrder";
+
+@Table({ tableName: "subscriptions" })
+export default class Subscription extends Model<Subscription> {
+  @ApiProperty({ description: "Unique identifier" })
+  @PrimaryKey
+  @Column
+  id: number;
+
+  @ApiProperty({ description: "Unique User identifier" })
+  @Column({ field: "user_id" })
+  userId: number;
+
+  @ApiProperty({ description: "Unique Subscription Status identifier" })
+  @ForeignKey(() => SubscriptionStatus)
+  @Column({ field: "subscription_status_id" })
+  statusId: number;
+
+  ...
+
+  @BelongsTo(() => SubscriptionStatus)
+  status: SubscriptionStatus;
+
+  @HasMany(() => SubscriptionProduct)
+  products: SubscriptionProduct[];
+
+  @HasMany(() => SubscriptionOrder)
+  orders: SubscriptionOrder[];
+
+  @Remote({
+    uri: ({ model }) => `/v1/users/${model.userId}`,
+  })
+  user: any;
+}
+
+```
+
+<p align="right">(<a href="#top">go to top</a>)</p>
+
+
+#### Decorators
+
+##### Cache
+
+This decorator works in conjunction with the [cache interceptor](https://gitlab.com/steplix/nestjs-microservice#cache-controller-endpoints).
+
+```typescript
+const { CacheInterceptor, Cache } = require('@steplix/microservice');
+
+...
+@UseInterceptors(CacheInterceptor)
+export class SubscriptionsController {
+  ...
+  @Get()
+  @Cache()
+  find(@Query query: any) {
+    ...
+  }
+  ...
+  @Get()
+  @Cache({
+    time: "6 hour"
+  })
+  getById(@Query query: any) {
+    ...
+  }
+  ...
+  @Get()
+  @Cache({
+    key: "my-custom-key"
+  })
+  listSubscribableProducts() {
+    ...
+  }
+  ...
+  @Get()
+  // No cache, for this endpoint
+  @Cache(false)
+  listWrongSubscriptions() {
+    ...
+  }
+  ...
+}
+```
+
+The available settings of this decorator are,
+
+```typescript
+{
+  // Cache key
+  key?: string | (ctx: ExecutionContext) => Promise<string | undefined> | string | undefined;
+
+  // Cache time in milliseconds
+  time?: number | string | (ctx: ExecutionContext) => Promise<number | undefined> | number | undefined;
+
+  // Indicate if the endpoint is exclude from cache
+  exclude?: boolean | (ctx: ExecutionContext) => Promise<boolean | undefined> | boolean | undefined;
+}
+```
+
+##### Remote
+
+This decorator is used to indicate that a property is remote and how its value should be popular.
+
+```typescript
+typescript
+...
+
+@Table({ tableName: "subscriptions" })
+export default class Subscription extends Model<Subscription> {
+
+  ...
+
+  @ApiProperty({ description: "Unique User identifier" })
+  @Column({ field: "user_id" })
+  userId: number;
+
+  ...
+
+  @Remote({
+    uri: ({ model }) => `/v1/users/${model.userId}`,
+  })
+  user: any;
+}
+```
+
+In this example, you can see how it was indicated that the user property is remote. For the same, it was indicated that url is the one that responds with said data.
+To popularize this value, the services are used.
+To know which service to use, use the name of the property.
+
+The available settings of this decorator are,
+
+```typescript
+{
+  // Remote service name
+  service?: string | (...args: any[]) => any;
+
+  // URI for call remote service
+  uri?: string | (...args: any[]) => any;
+
+  // HTTP Method used for call remote service
+  method?: string | (...args: any[]) => any;
+
+  // Axios request config
+  options?: AxiosRequestConfig | (...args: any[]) => any;
+
+  // Indicates whether the dependency is mandatory or not
+  required?: boolean | (...args: any[]) => any;
+
+  // Indicates if the error should be printed if the request does not fail
+  silent?: boolean | (...args: any[]) => any;
+
+  // Remote field to resolve
+  remoteField?: string;
+}
+```
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
@@ -468,5 +681,7 @@ npm test
 [configure-doc]: #for-documentation
 [communication-between-microservices]: #communication-between-microservices
 [interceptors]: #interceptors
+[database]: #database
+[decorators]: #decorators
 [logger]: #logger
 [tests]: #tests

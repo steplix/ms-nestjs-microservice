@@ -1,18 +1,20 @@
 import { ExecutionContext } from "@nestjs/common";
-type CacheOptionFactory = (ctx: ExecutionContext) => Promise<string> | string | number | boolean;
+type CacheKeyOptionFactory = (ctx: ExecutionContext) => Promise<string | undefined> | string | undefined;
+type CacheTimeOptionFactory = (ctx: ExecutionContext) => Promise<number | undefined> | number | undefined;
+type CacheExcludeOptionFactory = (ctx: ExecutionContext) => Promise<boolean | undefined> | boolean | undefined;
 export interface ICacheOptions {
     /**
      * Cache key
      */
-    key?: string | CacheOptionFactory;
+    key?: string | CacheKeyOptionFactory;
     /**
      * Cache time in milliseconds
      */
-    time?: number | CacheOptionFactory;
+    time?: number | string | CacheTimeOptionFactory;
     /**
      * Indicate if the endpoint is exclude from cache
      */
-    exclude?: boolean | CacheOptionFactory;
+    exclude?: boolean | CacheExcludeOptionFactory;
 }
 export declare function Cache(): Function;
 export declare function Cache(key: string): Function;
