@@ -8,14 +8,23 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2021",
-    "sourceMap": false,
-    "outDir": "./",
+    "outDir": "./.build",
     "baseUrl": "./",
+    "sourceMap": true,
+    "inlineSources": true,
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
   },
   "exclude": [
     "node_modules",
-    "tests"
+    "test",
+    ".build",
+    "db",
+    "**/*spec.ts"
   ]
 }

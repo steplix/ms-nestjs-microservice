@@ -1,6 +1,6 @@
-import { isString, isArray, merge, mapKeys } from "lodash";
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { isString, isArray, merge } from 'lodash';
+import { Injectable, ServiceUnavailableException, GatewayTimeoutException, InternalServerErrorException } from '@nestjs/common';
+import axios, { type AxiosInstance, type AxiosRequestConfig, type CreateAxiosDefaults, type ResponseType } from 'axios';
 
 //
 // constants
@@ -10,167 +10,130 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 // const defaultServiceAgent = process.env.SERVICE_AGENT || "";
 
 // must be greater than requestTimeout
-const defaultConnectionTimeout = +(process.env.SERVICE_CONNECTION_TIMEOUT || 21000);
-const defaultRequestTimeout = +(process.env.SERVICE_REQUEST_TIMEOUT || 20000);
+const defaultConnectionTimeout = +(process.env.SERVICE_CONNECTION_TIMEOUT ?? 21000);
+const defaultRequestTimeout = +(process.env.SERVICE_REQUEST_TIMEOUT ?? 20000);
 
 // constants for connections errors
-const connectionErrors = ["ECONNREFUSED", "ENETUNREACH"];
+const connectionErrors = ['ECONNREFUSED', 'ENETUNREACH'];
 
 //
 // variables
 //
-
 const instances = {};
-const renameMapKeys = {
-  baseUrl: "baseURL",
-  uri: "url",
-  qs: "params",
-  body: "data",
-};
 const defaultAddOptions = {
-  responseType: "json",
-  debug: false,
+    responseType: 'json' as ResponseType
 };
+
+interface IOptions<D = unknown> extends CreateAxiosDefaults<D> {
+    connectionTimeout?: number
+    requestTimeout?: number
+    name?: string
+    health?: string
+}
 
 /**
  * Service based on axios
  */
 @Injectable()
 export class Service {
-  //
-  // private
-  //
+    //
+    // private
+    //
+    private readonly r: AxiosInstance;
 
-  private options: any;
-  private connectionTimeout: number;
-  private requestTimeout: number;
-  private r: AxiosInstance;
+    //
+    // public
+    //
+    readonly options: IOptions;
 
-  //
-  // public
-  //
+    constructor (options: string | IOptions = {}) {
+        this.options = this.urlToOptions(options);
+        this.options.connectionTimeout ??= defaultConnectionTimeout;
+        this.options.timeout ??= this.options.requestTimeout ?? defaultRequestTimeout;
+        this.r = axios.create(this.options);
+    }
 
-  constructor(options: any = {}) {
-    this.options = options;
-    this.connectionTimeout = options.connectionTimeout || defaultConnectionTimeout;
-    this.requestTimeout = options.requestTimeout || defaultRequestTimeout;
-    this.r = axios.create(this.options as AxiosRequestConfig);
-  }
+    request<T> (method: string, options: string | IOptions = {}): Promise<T> {
+        return new Promise((resolve, reject): void => {
+            const opts = this.prepareOptions(method, options);
 
-  request(method: string, options: any = {}) {
-    return new Promise((resolve, reject) => {
-      const opts = this.prepareOptions(method, options);
+            this.r
+                .request(opts)
+                .then((res) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    resolve((opts as any).raw !== undefined ? res : res.data);
+                })
+                .catch((error) => {
+                    const extra = {
+                        from: this.options.name,
+                        path: opts.url,
+                        method: opts.method,
+                    };
 
-      return this.r
-        .request(opts)
-        .then((res) => resolve(opts.raw ? res : res.data))
-        .catch((error) => {
-          const extra = {
-            from: (this.r.defaults as any).name,
-            path: opts.url,
-            method: opts.method,
-          };
+                    if (axios.isAxiosError(error)) {
+                        if (error.response !== undefined) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (error as any).extra = extra;
+                            reject(error);
+                            return;
+                        }
 
-          if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx.
-             * Convert axios error to @comodinx/http-errors
-             * Throw error to be handled outside this abstract method
-             */
-            error.extra = extra;
-            return reject(error);
-          } else if (error.request) {
-            // The request was made but no response was received, `error.request`
-            if (connectionErrors.includes(error.code)) {
-              // no conection made
-              return reject(
-                new HttpException(
-                  { message: "Service Unavailable. Try again later.", extra },
-                  HttpStatus.SERVICE_UNAVAILABLE
-                )
-              );
-            }
-            // timeout error
-            return reject(
-              new HttpException({ message: "Timeout Error. Try again later.", extra }, HttpStatus.GATEWAY_TIMEOUT)
-            );
-          } else {
-            if (error.__CANCEL__) {
-              // The service is unreachable (connection timeout)
-              return reject(
-                new HttpException(
-                  { message: "Service Unavailable. Try again later.", extra },
-                  HttpStatus.SERVICE_UNAVAILABLE
-                )
-              );
-            }
-            // Something happened in setting up the request and triggered an Error
-            error.extra = extra;
-            return reject(
-              new HttpException({ message: "Internal Server Error", extra: error }, HttpStatus.INTERNAL_SERVER_ERROR)
-            );
-          }
+                        if (connectionErrors.includes(error.code ?? '')) {
+                            reject(new ServiceUnavailableException({ message: 'Service Unavailable. Try again later.', extra }));
+                            return;
+                        }
+                        throw new GatewayTimeoutException({ message: 'Timeout Error. Try again later.', extra });
+                    } else {
+                        if (error.__CANCEL__ !== undefined) {
+                            // The service is unreachable (connection timeout)
+                            throw new ServiceUnavailableException({ message: 'Service Unavailable. Try again later.', extra });
+                        }
+                        // Something happened in setting up the request and triggered an Error
+                        throw new InternalServerErrorException({ extra, error });
+                    }
+                });
         });
-    });
-  }
-
-  prepareOptions(method: string, options: any) {
-    if (isString(options)) {
-      options = {
-        url: options,
-      };
     }
 
-    // set default methods and headers
-    options.method = method || "get";
-    options.headers = merge({}, options.headers || {});
+    prepareOptions (method: string, options: string | IOptions): AxiosRequestConfig {
+        options = this.urlToOptions(options);
+        // set default methods and headers
+        options.method = method ?? 'get';
+        options.headers = merge({}, options.headers ?? {});
 
-    // set request timeout
-    options.timeout = options.timeout || this.requestTimeout;
+        const connectionTimeout = options.connectionTimeout ?? this.options.connectionTimeout;
 
-    // set of connection timeout cancel token
-    const source = axios.CancelToken.source();
-    const connectionTimeout = options.connectionTimeout || this.connectionTimeout;
-    setTimeout(() => source.cancel(), connectionTimeout);
-    options.cancelToken = source.token;
+        // set of connection timeout cancel token
+        const source = axios.CancelToken.source();
+        setTimeout(() => { source.cancel(); }, connectionTimeout);
+        options.cancelToken = source.token;
 
-    return mapKeys(options, (value, key) => renameMapKeys[key] || key);
-  }
-
-  health(options: any = {}) {
-    options.url = options.url || options.uri || this.options.health || "/health";
-    return this.get(options);
-  }
-
-  getOne(options: any = {}) {
-    if (isString(options)) {
-      options = {
-        url: options,
-      };
+        return options as AxiosRequestConfig;
     }
 
-    options = options || {};
-
-    if (options.qs) {
-      options.params = options.qs;
+    health<T> (options: IOptions = {}): Promise<T> {
+        options.url = options.url ?? this.options.health ?? '/health';
+        return this.get(options);
     }
 
-    options.params = options.params || {};
-    options.params.pageSize = 1;
-    options.params.page = 1;
+    getOne<T> (options: string | IOptions = {}): Promise<T> {
+        options = this.urlToOptions(options);
+        options.params = options.params ?? {};
+        options.params.pageSize = 1;
+        options.params.page = 1;
 
-    return this.get(options).then((models) => {
-      models = models || [];
+        return this.get<T[]>(options).then((models) => {
+            models = models ?? [];
 
-      if (!isArray(models)) {
-        return models;
-      }
-      return models[0];
-    });
-  }
+            if (!isArray(models)) {
+                return models;
+            }
 
-  /**
+            return models[0];
+        });
+    }
+
+    /**
    * Transform all http methods on service function
    *
    * service.get
@@ -184,43 +147,43 @@ export class Service {
    * service.trace
    */
 
-  get(options) {
-    return this.request("get", options);
-  }
+    get<T = unknown> (options: string | IOptions = {}): Promise<T> {
+        return this.request<T>('get', options);
+    }
 
-  post(options) {
-    return this.request("post", options);
-  }
+    post<T = unknown, D = unknown> (options: string | IOptions<D> = {}): Promise<T> {
+        return this.request<T>('post', options);
+    }
 
-  put(options) {
-    return this.request("put", options);
-  }
+    put<T = unknown, D = unknown> (options: string | IOptions<D> = {}): Promise<T> {
+        return this.request<T>('put', options);
+    }
 
-  patch(options) {
-    return this.request("patch", options);
-  }
+    patch<T = unknown, D = unknown> (options: string | IOptions<D> = {}): Promise<T> {
+        return this.request<T>('patch', options);
+    }
 
-  del(options) {
-    return this.request("delete", options);
-  }
+    del<T = unknown, D = unknown> (options: string | IOptions<D> = {}): Promise<T> {
+        return this.request<T>('delete', options);
+    }
 
-  opts(options) {
-    return this.request("options", options);
-  }
+    opts<T = unknown> (options: string | IOptions = {}): Promise<T> {
+        return this.request<T>('options', options);
+    }
 
-  head(options) {
-    return this.request("head", options);
-  }
+    head<T = unknown> (options: string | IOptions = {}): Promise<T> {
+        return this.request<T>('head', options);
+    }
 
-  connect(options) {
-    return this.request("connect", options);
-  }
+    connect<T = unknown> (options: string | IOptions = {}): Promise<T> {
+        return this.request<T>('connect', options);
+    }
 
-  trace(options) {
-    return this.request("trace", options);
-  }
+    trace<T = unknown> (options: string | IOptions = {}): Promise<T> {
+        return this.request<T>('trace', options);
+    }
 
-  /**
+    /**
    * Add read only service property.
    *
    * @param  Object  service  Options for service
@@ -231,44 +194,43 @@ export class Service {
    *     port: 8081
    *   })
    */
-  static add(options: any = {}) {
-    options = { ...defaultAddOptions, ...options };
+    static add (options: IOptions = {}): void {
+        options = { ...defaultAddOptions, ...options };
 
-    // Check if need add service, verify options with name.
-    if (!options.name) {
-      return;
+        // Check if need add service, verify options with name.
+        if (options.name === undefined) return;
+
+        // Add service with options.name
+        Object.defineProperty(Service, options.name, {
+            configurable: true,
+            enumerable: true,
+            get: () => {
+                if (options.name === undefined) return;
+
+                let instance = instances[options.name];
+
+                if (instance === undefined) {
+                    instance = instances[options.name] = new Service(options);
+                }
+                return instance;
+            },
+        });
     }
 
-    // Add service with options.name
-    Object.defineProperty(Service, options.name, {
-      configurable: true,
-      enumerable: true,
-      get: function () {
-        let instance = instances[options.name];
-
-        if (!instance) {
-          /*
-            //
-            // TODO :: Verify if this is very very necesary.
-            //
-
-            if (!options.httpAgent) {
-                options.httpAgent = new ServiceAgent({
-                    service: defaultServiceAgent
-                });
-            }
-          */
-          instance = instances[options.name] = new Service(options);
-        }
-        return instance;
-      },
-    });
-  }
-
-  /**
+    /**
    * Get service instance.
    */
-  static get(name) {
-    return (Service as any)[name];
-  }
+    static get (name: string): Service {
+        return instances[name] as Service;
+    }
+
+    private urlToOptions (options: string | IOptions): IOptions {
+        if (isString(options)) {
+            options = {
+                url: options,
+            };
+        }
+
+        return options;
+    }
 }

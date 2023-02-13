@@ -1,0 +1,43 @@
+env:
+  es2020: true
+  node: true
+  jest: true
+extends:
+  - plugin:@typescript-eslint/recommended
+  - standard-with-typescript
+  - standard
+root: true
+ignorePatterns:
+  - .eslintrc.yml
+  - '*.d.ts'
+  - dist
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2020
+  sourceType: module
+  project: ./tsconfig.json
+plugins:
+  - '@typescript-eslint/eslint-plugin'
+rules:
+  '@typescript-eslint/explicit-function-return-type': error
+  '@typescript-eslint/explicit-module-boundary-types': error
+  '@typescript-eslint/no-explicit-any': error
+  '@typescript-eslint/semi': [2, always]
+  '@typescript-eslint/indent': [2, 4, { SwitchCase: 1 }]
+  '@typescript-eslint/comma-dangle': [error, only-multiline]
+  '@typescript-eslint/no-var-requires': off
+  '@typescript-eslint/restrict-template-expressions': off
+  '@typescript-eslint/no-redeclare': off
+  '@typescript-eslint/no-extra-semi': error
+  '@typescript-eslint/no-floating-promises': off
+  '@typescript-eslint/promise-function-async': off
+  '@typescript-eslint/return-await': off
+  '@typescript-eslint/key-spacing': off
+  no-useless-constructor: off
+  no-redeclare: off
+  semi: [2, always]
+  no-extra-semi: error
+  no-console: error
+  quotes: [2, single]
+  indent: [2, 4, { SwitchCase: 1 }]
+  comma-dangle: [error, only-multiline]

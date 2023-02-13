@@ -52,3 +52,7 @@ CMakeLists.txt
 
 #gyp
 **/build
+
+.build
+.env
+.env.*

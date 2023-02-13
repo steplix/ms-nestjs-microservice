@@ -1,2 +1,2 @@
-export * from "./finder";
-export * from "./getterById";
+export * from './finder';
+export * from './getterById';

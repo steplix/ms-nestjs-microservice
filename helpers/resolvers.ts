@@ -22,8 +22,8 @@ const pkg = require(`${process.cwd()}/package.json`);
  *
  * @return process environment value or default value
  */
-export const resolveEnvVar = (key: string, defaultValue: any = null) => {
-  return process.env[key.toUpperCase()] || defaultValue;
+export const resolveEnvVar = (key: string, defaultValue = ''): string => {
+    return process.env[key.toUpperCase()] ?? defaultValue;
 };
 
 /**
@@ -48,8 +48,8 @@ export const resolveEnvVar = (key: string, defaultValue: any = null) => {
  *
  * @return process environment value or default value
  */
-export const resolveEnvVarWithPrefix = (key: string, prefix = "", defaultValue: any = null) => {
-  return process.env[`${prefix}_${key}`.toUpperCase()] || resolveEnvVar(key, defaultValue);
+export const resolveEnvVarWithPrefix = (key: string, prefix = '', defaultValue = ''): string => {
+    return process.env[`${prefix}_${key}`.toUpperCase()] ?? resolveEnvVar(key, defaultValue);
 };
 
 /**
@@ -73,8 +73,8 @@ export const resolveEnvVarWithPrefix = (key: string, prefix = "", defaultValue: 
  *
  * @return process environment value or default value
  */
-export const resolveEnvVarByApp = (key: string, defaultValue: any = null) => {
-  return resolveEnvVarWithPrefix(key, pkg.name, defaultValue);
+export const resolveEnvVarByApp = (key: string, defaultValue = ''): string => {
+    return resolveEnvVarWithPrefix(key, pkg.name, defaultValue);
 };
 
 /**
@@ -115,10 +115,10 @@ export const resolveEnvVarByApp = (key: string, defaultValue: any = null) => {
  *
  * @return {any} Result of solving the value
  */
-export const resolvePossibleFunctionValue = (value: any, defaultValue: any, ...args) => {
-  if (typeof value === "function") {
-    value = value(...args);
-  }
-  // == null is nil comparation (null or undefined)
-  return value == null ? defaultValue : value;
+export const resolvePossibleFunctionValue = async (value: unknown, defaultValue: unknown, ...args: unknown[]): Promise<unknown> => {
+    if (typeof value === 'function') {
+        value = await value(...args);
+    }
+
+    return value ?? defaultValue;
 };

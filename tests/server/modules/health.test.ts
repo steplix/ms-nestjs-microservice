@@ -4,8 +4,7 @@ import { ServiceHealthIndicator } from '../../../services';
 import { HealthEntity } from '../../../server/modules/health/entities';
 import {
   HealthController,
-  HealthService,
-  HealthModule,
+  HealthService
 } from '../../../server/modules/health';
 import { LoggerMock } from '../../mocks';
 

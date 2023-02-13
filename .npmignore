@@ -52,6 +52,8 @@ tests
 .strong-pm
 config.gypi
 CVS
+.env
+.env.*
 
 # SonarQube intermediate storage (http://www.sonarqube.org/)
 .sonar
@@ -66,3 +68,4 @@ CMakeLists.txt
 *.ts
 !*.d.ts
 *.tsbuildinfo
+.build

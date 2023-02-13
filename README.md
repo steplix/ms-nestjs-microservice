@@ -400,7 +400,7 @@ For configure credentials, use `.env` file. For example,
 
 DB_DEBUG=true
 DB_ENABLED=true
-DB_AUTODISCOVER=true
+DB_AUTO_DISCOVER=true
 DB_PASS=WwFFTRDJ7s2RgPWx
 DB_NAME=steplixpp_subscriptions
 DB_HOST=localhost
