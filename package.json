@@ -19,7 +19,10 @@
     "type": "git",
     "url": "https://github.com/steplix/ms-nestjs-microservice"
   },
-  "license": "ISC",
+  "author": {
+    "name": "Steplix Developer"
+  },
+  "license": "MIT",
   "dependencies": {
     "@comodinx/cache": "^0.0.6",
     "@nestjs/common": "^9.3.8",
