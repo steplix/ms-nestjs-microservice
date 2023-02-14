@@ -1,3 +1,3 @@
-import { Model } from 'sequelize-typescript';
+import { Model as BaseModel } from 'sequelize-typescript';
 
-export default Model;
+export class Model extends BaseModel {}

@@ -1,2 +1,2 @@
-export * from './isInteger';
-export * from './isNumber';
+export * from './is-integer';
+export * from './is-number';

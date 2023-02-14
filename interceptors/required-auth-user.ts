@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { isEmpty, isNil } from 'lodash';
-import { AuthUserInterceptor } from './authUser';
+import { AuthUserInterceptor } from './auth-user';
 
 @Injectable()
 export class RequiredAuthUserInterceptor extends AuthUserInterceptor {

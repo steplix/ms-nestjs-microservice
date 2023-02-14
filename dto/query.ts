@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
-export class FinderDto {
+export class QueryDto {
     @ApiProperty({
         description: 'Filters condition',
-        example: 'categoryId eq 1,description li *cerveza*',
+        example: 'categoryId = 1 & description like "%beer%"',
         required: false,
-        default: null,
+        default: null
     })
     @IsOptional()
         filters?: string;
@@ -15,7 +15,7 @@ export class FinderDto {
         description: 'Order registers',
         example: 'createdOnUtc-DESC',
         required: false,
-        default: null,
+        default: null
     })
     @IsOptional()
         order?: string;
@@ -24,55 +24,46 @@ export class FinderDto {
         description: 'Group registers',
         example: 'id',
         required: false,
-        default: null,
+        default: null
     })
     @IsOptional()
         group?: string;
 
     @ApiProperty({
         description: 'Fields',
-        example: '*',
+        example: 'id, description',
         required: false,
-        default: null,
+        default: null
     })
     @IsOptional()
         fields?: string;
 
     @ApiProperty({
         description: 'Include relationships (Format, relation)',
-        example: 'status',
+        example: 'status, department',
         required: false,
-        default: null,
+        default: null
     })
     @IsOptional()
-        include?: string;
-
-    @ApiProperty({
-        description: 'Remote relationships (Format, relation)',
-        example: 'product',
-        required: false,
-        default: null,
-    })
-    @IsOptional()
-        remotes?: string;
+        includes?: string;
 
     @ApiProperty({
         description: 'Indicate page size length',
-        example: '10',
+        example: 10,
         required: false,
-        default: 25,
+        default: 25
     })
     @IsOptional()
-    @IsNumberString({}, { message: 'Invalid page size' })
-        pageSize?: string;
+    @IsNumber(undefined, { message: 'Invalid page size' })
+        pageSize?: number;
 
     @ApiProperty({
         description: 'Indicate current page',
-        example: '1',
+        example: 1,
         required: false,
-        default: 1,
+        default: 1
     })
     @IsOptional()
-    @IsNumberString({}, { message: 'Invalid page' })
-        page?: string;
+    @IsNumber(undefined, { message: 'Invalid page' })
+        page?: number;
 }

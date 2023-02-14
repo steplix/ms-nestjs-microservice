@@ -1,6 +1,6 @@
 import { Module, type NestModule, type MiddlewareConsumer } from '@nestjs/common';
 import { LoggerMiddleware } from '../middleware';
-import { moduleOptions } from './app.module.options';
+import { moduleOptions } from './app-options.module';
 
 @Module(moduleOptions)
 export class AppModule implements NestModule {

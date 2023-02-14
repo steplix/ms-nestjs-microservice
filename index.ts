@@ -6,4 +6,5 @@ export * from './services';
 export * from './helpers';
 export * from './server';
 export * from './cache';
-export * from './dtos';
+export * from './enums';
+export * from './dto';
