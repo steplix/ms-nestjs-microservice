@@ -92,7 +92,7 @@
     "microservice"
   ],
   "files": [
-    ".build",
+    ".build/**/*",
     "bin",
     "LICENSE",
     "README.md"
