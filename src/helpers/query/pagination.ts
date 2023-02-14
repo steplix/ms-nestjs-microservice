@@ -1,4 +1,4 @@
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 
 const MINIMUM_PAGE_SIZE = 1;
 const MINIMUM_PAGE = 1;

@@ -1,11 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { TerminusModule } from '@nestjs/terminus';
-import { ServiceHealthIndicator } from '../../../src/services';
-import { HealthEntity } from '../../../src/server/modules/health/entities';
+import { ServiceHealthIndicator } from '../../../services';
+import { HealthEntity } from '../../../server/modules/health/entities';
 import {
   HealthController,
   HealthService
-} from '../../../src/server/modules/health';
+} from '../../../server/modules/health';
 import { LoggerMock } from '../../mocks';
 
 describe('Health', () => {

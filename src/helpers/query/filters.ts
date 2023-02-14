@@ -1,6 +1,6 @@
 import { Expression } from 'sequelize-expression';
 import { Op, type WhereOptions } from 'sequelize';
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 
 export const parseFilters = async (query: QueryDto): Promise<WhereOptions | undefined> => {
     if (query.filters === undefined || query.filters === '') return;

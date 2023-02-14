@@ -50,9 +50,9 @@ test.js
 #CLion
 CMakeLists.txt
 
-#gyp
-**/build
-
-build
 .env
 .env.*
+
+# Typescript build
+dist
+tsconfig.tsbuildinfo

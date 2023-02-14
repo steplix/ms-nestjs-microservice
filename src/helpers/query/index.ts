@@ -1,4 +1,4 @@
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 import { type FindOptions } from 'sequelize';
 import { parsePagination } from './pagination';
 import { parseFields } from './fields';

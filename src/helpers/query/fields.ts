@@ -1,4 +1,4 @@
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 import { fn, col, type FindAttributeOptions, type ProjectionAlias } from 'sequelize';
 
 const buildField = (field: string): string | ProjectionAlias => {

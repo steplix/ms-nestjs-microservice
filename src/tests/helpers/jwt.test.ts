@@ -7,7 +7,7 @@
 //
 // imports
 //
-import { jwt } from '../../src/helpers';
+import { jwt } from '../../helpers';
 
 //
 // constants

@@ -1,4 +1,4 @@
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 
 export const parseIncludes = (query: QueryDto): string[] | undefined => {
     if (query.includes === undefined) return;

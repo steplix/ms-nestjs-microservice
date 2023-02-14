@@ -1,0 +1,10 @@
+node_modules/
+build/
+src/
+tests/
+jest.config.js
+.eslintignore
+.eslintrc.yml
+.nvmrc
+tsconfig.build.json
+tsconfig.json

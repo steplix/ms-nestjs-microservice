@@ -2,12 +2,13 @@
   "name": "@steplix/nestjs-microservice",
   "version": "1.0.0",
   "description": "Base MS for Steplix. Based on NestJS",
-  "main": "build/src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "steplix-db-install": "./bin/steplix-db-install.js"
   },
   "scripts": {
-    "build": "tsc && rm -R -f build/tests",
+    "build": "tsc && rm -R -f dist/tests",
     "lint": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\"",
     "lint:fix": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\" --fix",
     "test": "jest --clearCache && jest",
@@ -90,11 +91,5 @@
     "typescript",
     "template",
     "microservice"
-  ],
-  "files": [
-    "bin",
-    "build",
-    "LICENSE",
-    "README"
   ]
 }

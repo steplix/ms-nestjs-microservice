@@ -1,4 +1,4 @@
-import { isInteger } from '../../../src/helpers/validations';
+import { isInteger } from '../../../helpers/validations';
 
 describe('validations', () => {
 

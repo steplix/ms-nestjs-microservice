@@ -2,7 +2,7 @@
 // imports
 //
 import { isEqual } from 'lodash';
-import { cache } from '../src/cache';
+import { cache } from '../cache';
 
 //
 // constants

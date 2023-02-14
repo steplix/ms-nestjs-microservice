@@ -1,4 +1,4 @@
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 import { type GroupOption } from 'sequelize';
 
 export const parseGroup = (query: QueryDto): GroupOption | undefined => {

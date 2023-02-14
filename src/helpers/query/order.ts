@@ -1,4 +1,4 @@
-import { type QueryDto } from 'dto';
+import { type QueryDto } from '../../dto';
 import { OrderDirectionEnum } from '../../enums';
 import { type Order } from 'sequelize';
 
