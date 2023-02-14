@@ -42,7 +42,7 @@ npm up @steplix/nestjs-microservice
 ### Source code
 
 ```sh
-git clone https://github.com/steplix/ms-nestjs-microservice
+git clone https://github.com/steplix/pkg-nestjs-microservice
 cd ms-nestjs-microservice
 npm i
 ```
