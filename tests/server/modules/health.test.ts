@@ -60,7 +60,7 @@ describe('Health', () => {
         it('should return an object with health check success status', async () => {
             const result: HealthEntity = {
                 alive: true,
-                name: '@steplix/microservice',
+                name: '@steplix/nestjs-microservice',
                 version: '1.0.0',
                 environment: 'test'
             };
@@ -73,7 +73,7 @@ describe('Health', () => {
         it('should return an object with health check failure status', async () => {
             const result: HealthEntity = {
                 alive: false,
-                name: '@steplix/microservice',
+                name: '@steplix/nestjs-microservice',
                 version: '1.0.0',
                 environment: 'test',
                 info: {},

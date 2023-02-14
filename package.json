@@ -1,5 +1,5 @@
 {
-  "name": "@steplix/microservice",
+  "name": "@steplix/nestjs-microservice",
   "version": "1.0.0",
   "description": "Base MS for Steplix. Based on NestJS",
   "main": "index.js",
@@ -7,13 +7,14 @@
     "steplix-db-install": "./bin/steplix-db-install.js"
   },
   "scripts": {
-    "build": "tsc && cp -R bin .build/ && cp -R LICENSE .build/ && cp package.json .build/ && cd .build && rm -r tests",
+    "build": "tsc",
     "lint": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\"",
     "lint:fix": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\" --fix",
     "test": "jest --clearCache && jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "husky:prepare": "husky install"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint && npm test"
   },
   "repository": {
     "type": "git",
@@ -83,5 +84,17 @@
   },
   "engines": {
     "node": "18.x"
-  }
+  },
+  "keywords": [
+    "nest js",
+    "typescript",
+    "template",
+    "microservice"
+  ],
+  "files": [
+    ".build",
+    "bin",
+    "LICENSE",
+    "README.md"
+  ]
 }

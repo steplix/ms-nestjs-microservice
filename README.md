@@ -1,6 +1,4 @@
-<div id="top"></div>
-
-# @steplix/microservice
+# @steplix/nestjs-microservice
 
 Based NodeJs + NestJs microservice.
 
@@ -8,8 +6,7 @@ Based NodeJs + NestJs microservice.
 
 * [Download & Install][install]
 * [How is it used?][how_is_it_used]
-  + [Getting started][getting_started]
-  + [Configure][configure]
+  * [Configure][configure]
     * [App / Server][configure-server]
     * [Database][configure-database]
     * [Database replication][configure-database-replication]
@@ -21,44 +18,37 @@ Based NodeJs + NestJs microservice.
     * [Cache][configure-cache]
     * [Tracking][configure-tracking]
     * [Documentation][configure-doc]
-  + [Communication between microservices][communication-between-microservices]
-  + [Interceptors][interceptors]
-  + [Database][database]
-  + [Decorators][decorators]
-  + [Logger][logger]
+  * [Communication between microservices][communication-between-microservices]
+  * [Interceptors][interceptors]
+  * [Database][database]
+  * [Decorators][decorators]
+  * [Logger][logger]
 * [Tests][tests]
 
 ## Download & Install
 
 ### Install
-```sh
-npm i git+https://oauth2:<STEPLIX_GITHUB_TOKEN>@gitlab.com/steplix/nestjs-microservice.git#develop
-```
 
-Or add next line on your package.json
 ```sh
-{
-  ...
-  "dependencies": {
-    "@steplix/microservice": "git+https://oauth2:<STEPLIX_GITHUB_TOKEN>@gitlab.com/steplix/nestjs-microservice.git#develop"
-    ...
-  }
-}
+npm i @steplix/nestjs-microservice
 ```
 
 ### Update
+
 ```sh
-npm up @steplix/microservice
+npm up @steplix/nestjs-microservice
 ```
 
 ### Source code
+
 ```sh
-git clone https://gitlab.com/steplix/nestjs-microservice.git
-cd nestjs-microservice
+git clone https://github.com/steplix/ms-nestjs-microservice
+cd ms-nestjs-microservice
 npm i
 ```
 
 ### Publish
+
 ```sh
 # on NPM
 npm run build
@@ -66,52 +56,44 @@ npm publish
 
 # or
 # on GIT
-npm run build
 git add .
 git commit -m "Support for ..."
 git push origin develop
 ```
 
 ## How is it used?
-> NOTE: Based on NestJs.
 
+> NOTE: Based on NestJs.
 
 ### Recommended structure
 
-```
+```txt
 |
 | -> src
-|    | -> config                    <- (opcional) Configuraciones especificas del MS
+|    | -> config                    <- (optional) MS configurations
 |    |
-|    | -> constants                 <- (opcional) Constantes especificas del MS
+|    | -> constants                 <- (optional) MS constants
 |    |
-|    | -> entities                  <- (opcional) Entidades mapeadas de la DB
-|    |    | -> your-entity-class.   <- Ej. "pet"
+|    | -> entities                  <- (optional) Mapped DB entities
+|    |    | -> your-entity-class.ts <- Ej. "pet"
 |    |    | -> pet.ts <--------------------\___/
 |    |
-|    | -> modules                   <- Modulos del MS
-|    |    | -> your-module-name.    <- Ej. "pets"
+|    | -> modules                   <- Nest js MS module
+|    |    | -> your-module-name     <- Ej. "pets"
 |    |    | -> pets <----------------------\____/
-|    |    |    | -> controller.ts   <- Controlador de puntos de entrada
-|    |    |    | -> service.ts      <- Servicio encargado de resolver lo solicitado por el cliente
-|    |    |    | -> module.ts       <- Modulo encargado de mapear todo lo necesario para el correcto funcionamiento de petos
+|    |    |    | -> controller.ts   <- Entry point controller
+|    |    |    |
+|    |    |    | -> service.ts      <- Service in charge of resolving what is requested by the client
+|    |    |    |
+|    |    |    | -> module.ts       <- Module in charge of mapping everything necessary for the correct operation within the nest js environment
 |    |
-|    | -> app.module.ts             <- Modulo encargado de mapear todo lo necesario para el correcto funcionamiento del MS
+|    | -> app.module.ts             <- Base module
 |    |
-|    | -> app.ts                    <- Aplicación de NestJs
+|    | -> app.ts                    <- NestJs application logic
 |    |
-|    | -> main.ts                   <- Disparador de la aplicación (punto de inicio)
-|
-| -> ecosystem.config.js            <- Archivo de configuraciones para correr con PM2
-|
-| -> endpoints.insomnia.json        <- Archivo de Insomnia para testeo de los endpoints
+|    | -> main.ts                   <- Application trigger (start point)
 |
 ```
-
-### Getting started
-
-See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/develop/helloworld.zip) for real life example. And a better way to start 😁
-
 
 ### Configure
 
@@ -126,10 +108,10 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### For database
 
 ##### Simple configuration
+
 | Environment variable           | Values                 | Type    | Default value                  | Description                                                                        |
 |:-------------------------------|:-----------------------|:--------|:-------------------------------|:-----------------------------------------------------------------------------------|
 | DB_ENABLED                     | true/false             | boolean | `true`                         | Indicate if need support for database                                              |
@@ -145,6 +127,7 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 
 ##### Read/Write replication configuration
+
 | Environment variable           | Values                | Type    | Default value                   | Description                                                                          |
 |:-------------------------------|:----------------------|:--------|:--------------------------------|:-------------------------------------------------------------------------------------|
 | DB_NAME_WRITE                  | db name               | string  | `DB_NAME`                       | DB name for write replication                                                        |
@@ -160,7 +143,6 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### For debug/logger
 
 | Environment variable           | Values                        | Type    | Default value           | Description                                                                        |
@@ -171,7 +153,6 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### For communication between microservices
 
 | Environment variable           | Values                 | Type    | Default value           | Description                                                                               |
@@ -181,7 +162,6 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 | SERVICE_{MS NAME}_HEALTH       | Health pathname        | string  | `"/health"`             | Route for health check endpoint                                                           |
 
 <p align="right">(<a href="#top">go to top</a>)</p>
-
 
 #### For services
 
@@ -194,7 +174,6 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### For statics/publics assets
 
 | Environment variable           | Values                | Type    | Default value           | Description                                                                                |
@@ -205,21 +184,18 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### For JWT
 
 | Environment variable           | Values                 | Type    | Default value            | Description                                                                                |
 |:-------------------------------|:-----------------------|:--------|:-------------------------|:-------------------------------------------------------------------------------------------|
-| JWT_ALGORITHM                  | crypto algorithm       | string  | `RS256`                  |                                                                                            |
+| JWT_ALGORITHM                  | crypto algorithm       | string  | `null`                  |                                                                                            |
 | JWT_PUBLIC_KEY                 | public key             | string  | `null`                   |                                                                                            |
 | JWT_PRIVATE_KEY                | private key            | string  | `null`                   |                                                                                            |
 | JWT_PUBLIC_KEY_FILE            | path file public key   | string  | `null`                   |                                                                                            |
 | JWT_PRIVATE_KEY_FILE           | path file private key  | string  | `null`                   |                                                                                            |
 | JWT_SECRET                     | public and private key | string  | `"SECRET"`               | Only used when public and/or private key is not defined                                    |
 
-
 <p align="right">(<a href="#top">go to top</a>)</p>
-
 
 #### For Cache
 
@@ -228,17 +204,14 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 | CACHE_ENABLED                  | true/false             | string  | `true`                   | Indicate if is eanble this feature                                                         |
 | CACHE_TYPE                     | memory/redis           | string  | `'memory'`               |                                                                                            |
 
-
-**Redis**
+**`Redis`**
 
 | Environment variable           | Values                 | Type    | Default value            | Description                                                                                |
 |:-------------------------------|:-----------------------|:----    |:-------------------------|:-------------------------------------------------------------------------------------------|
 | CACHE_HOST                     | redis hostname         | string  | `'localhost'`            |                                                                                            |
 | CACHE_PORT                     | redis port number      | number  | `6379`                   |                                                                                            |
 
-
 <p align="right">(<a href="#top">go to top</a>)</p>
-
 
 #### For Tracking
 
@@ -249,7 +222,6 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 | TRACKING_PREFIX                | application name      | string  | `pkg.name` / `'app'`     | Description used for base prefix tracking event name                                       |
 
 <p align="right">(<a href="#top">go to top</a>)</p>
-
 
 #### For documentation
 
@@ -264,11 +236,10 @@ See [helloworld zip](https://gitlab.com/steplix/nestjs-microservice/-/blob/devel
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### Communication between microservices
 
 ```js
-const { Service } = require('@steplix/microservice');
+const { Service } = require('@steplix/nestjs-microservice');
 
 // ...
 
@@ -309,25 +280,24 @@ const user = await usersService.patch({
 
 ##### Available services
 
- - auth
- - users
- - locations
- - notifications
- - feature_toggler
+* auth
+* users
+* locations
+* notifications
+* feature_toggler
 
-> 
+>
 > 💡 NOTE: To configure more services, add the same ones in `config/services.ts` constant `remoteServices`;
-> 
+>
 
 <p align="right">(<a href="#top">go to top</a>)</p>
-
 
 #### Interceptors
 
 ##### Authenticate user by JWT
 
 ```typescript
-const { RequiredAuthUserInterceptor } = require('@steplix/microservice');
+const { RequiredAuthUserInterceptor } = require('@steplix/nestjs-microservice');
 
 ...
 export class SubscriptionsController {
@@ -345,7 +315,7 @@ export class SubscriptionsController {
 ##### Cache controller endpoints
 
 ```typescript
-const { CacheInterceptor, Cache } = require('@steplix/microservice');
+const { CacheInterceptor, Cache } = require('@steplix/nestjs-microservice');
 
 ...
 @UseInterceptors(CacheInterceptor)
@@ -385,16 +355,16 @@ export class SubscriptionsController {
 
 ##### Available interceptors
 
- - RequiredAuthUserInterceptor
- - AuthUserInterceptor
- - CacheInterceptor
+* RequiredAuthUserInterceptor
+* AuthUserInterceptor
+* CacheInterceptor
 
 <p align="right">(<a href="#top">go to top</a>)</p>
-
 
 #### Database
 
 For configure credentials, use `.env` file. For example,
+
 ```env
 ...
 
@@ -423,7 +393,7 @@ import {
   HasMany,
 } from "sequelize-typescript";
 import { ApiProperty } from "@nestjs/swagger";
-import { Model, Remote } from "@steplix/microservice";
+import { Model, Remote } from "@steplix/nestjs-microservice";
 import SubscriptionProduct from "./subscriptionProduct";
 import SubscriptionStatus from "./subscriptionStatus";
 import SubscriptionOrder from "./subscriptionOrder";
@@ -465,7 +435,6 @@ export default class Subscription extends Model<Subscription> {
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### Decorators
 
 ##### Cache
@@ -473,7 +442,7 @@ export default class Subscription extends Model<Subscription> {
 This decorator works in conjunction with the [cache interceptor](https://gitlab.com/steplix/nestjs-microservice#cache-controller-endpoints).
 
 ```typescript
-const { CacheInterceptor, Cache } = require('@steplix/microservice');
+const { CacheInterceptor, Cache } = require('@steplix/nestjs-microservice');
 
 ...
 @UseInterceptors(CacheInterceptor)
@@ -585,11 +554,10 @@ The available settings of this decorator are,
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### Logger
 
 ```js
-const { logger } = require('@steplix/microservice');
+const { logger } = require('@steplix/nestjs-microservice');
 
 logger.error(new Error('Not Found'));
 logger.error('This is an error');
@@ -600,11 +568,10 @@ logger.debug('Hello World!');
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 #### Tracking
 
 ```js
-const { tracking } = require('@steplix/microservice');
+const { tracking } = require('@steplix/nestjs-microservice');
 
 // Increment: Increments a stat by a value (default is 1)
 tracking.increment('my_counter');
@@ -638,7 +605,7 @@ tracking.histogram('my_histogram', 42, 0.25, ['tag'], next);
 // Set: Counts unique occurrences of a stat (alias of unique)
 tracking.unique('my_unique', 'foobarbaz');
 tracking.set('my_unique', 'foobar');
-tracking.set(['foo', 'bar'], 42, function(error, bytes){
+tracking.set(['foo', 'bar'], 42, function(error, bytes) {
   // this only gets called once after all messages have been sent
   if (error) {
     console.error('Oh noes! There was an error:', error);
@@ -650,23 +617,21 @@ tracking.set(['foo', 'bar'], 42, function(error, bytes){
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 ## Tests
 
 In order to see more concrete examples, **I INVITE YOU TO LOOK AT THE TESTS :)**
 
 ### Run the unit tests
+
 ```sh
 npm test
 ```
 
 <p align="right">(<a href="#top">go to top</a>)</p>
 
-
 <!-- deep links -->
 [install]: #download--install
 [how_is_it_used]: #how-is-it-used
-[getting_started]: #getting-started
 [configure]: #configure
 [configure-server]: #for-appserver
 [configure-database]: #for-database

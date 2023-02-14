@@ -2,7 +2,6 @@
 import { logger } from './logger';
 import { Service } from '../services';
 import { trues, falses } from '../constants';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require(`${process.cwd()}/package.json`);
 
@@ -12,6 +11,7 @@ const pkg = require(`${process.cwd()}/package.json`);
 const debug = trues.includes(String(process.env.TRACKING_DEBUG).toLowerCase());
 const enabled = !falses.includes(String(process.env.TRACKING_ENABLED).toLowerCase());
 const prefix = process.env.TRACKING_PREFIX ?? pkg.name ?? 'app';
+const URL_PREFIX = '/api/v1/track';
 
 interface Response {
     status: boolean
@@ -39,7 +39,7 @@ class Tracking {
    *   tracking.increment('my_counter', 1, 0.25);
    */
     async increment (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/increment', {
+        return this.dispatchEvent(`${URL_PREFIX}/increment`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
@@ -49,7 +49,7 @@ class Tracking {
    *   tracking.decrement('my_counter');
    */
     async decrement (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/decrement', {
+        return this.dispatchEvent(`${URL_PREFIX}/decrement`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
@@ -59,7 +59,7 @@ class Tracking {
    *   tracking.gauge('my_gauge', 123.45);
    */
     async gauge (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/gauge', {
+        return this.dispatchEvent(`${URL_PREFIX}/gauge`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
@@ -69,7 +69,7 @@ class Tracking {
    *   tracking.timing('response_time', 42);
    */
     async timing (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/timing', {
+        return this.dispatchEvent(`${URL_PREFIX}/timing`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
@@ -92,7 +92,7 @@ class Tracking {
    *
    */
     async histogram (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/histogram', {
+        return this.dispatchEvent(`${URL_PREFIX}/histogram`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
@@ -111,13 +111,13 @@ class Tracking {
    *   });
    */
     async set (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/set', {
+        return this.dispatchEvent(`${URL_PREFIX}/set`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
 
     async unique (stat: string, ...args: any[]): Promise<Response> {
-        return this.dispatchEvent('/api/v1/unique', {
+        return this.dispatchEvent(`${URL_PREFIX}/unique`, {
             args: [`${prefix}.${stat}`, ...args],
         });
     }
