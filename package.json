@@ -7,16 +7,14 @@
     "steplix-db-install": "./bin/steplix-db-install.js"
   },
   "scripts": {
-    "build": "tsc && rm -R build/tests",
+    "build": "tsc && rm -R -f build/tests",
     "lint": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\"",
     "lint:fix": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\" --fix",
     "test": "jest --clearCache && jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm test",
-    "prepack": "echo 'module.exports = require('./build');' >> index.js",
-    "postpack": "rm index.js"
+    "prepublishOnly": "npm run lint && npm test"
   },
   "repository": {
     "type": "git",
@@ -96,7 +94,6 @@
   "files": [
     "bin",
     "build",
-    "index.js",
     "LICENSE",
     "README"
   ]
