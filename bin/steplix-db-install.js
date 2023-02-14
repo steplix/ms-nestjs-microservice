@@ -26,7 +26,7 @@ const dbPass = process.env.DB_PASS || findArg('pass', 'WwFFTRDJ7s2RgPWx');
 
 // loggers
 const titleLog = (title) => console.log(`\n============== ${title} ==============\n`);
-const byeLog = (title) => console.log('\n👋 Bye!\n');
+const byeLog = () => console.log('\n👋 Bye!\n');
 const successLog = (error) => console.error(`✅ ${error}`);
 const errorLog = (error) => console.error(`❌ ${error}`);
 
