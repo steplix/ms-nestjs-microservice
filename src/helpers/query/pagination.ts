@@ -7,7 +7,7 @@ export const parsePagination = (query: QueryDto): { limit?: number, offset?: num
     if (query.pageSize === undefined) return {};
 
     query.page = query.page ?? MINIMUM_PAGE;
-    query.pageSize = query.pageSize ?? MINIMUM_PAGE_SIZE;
+    query.pageSize = Number(query.pageSize) ?? MINIMUM_PAGE_SIZE;
 
     const pageSize = query.pageSize >= MINIMUM_PAGE_SIZE ? query.pageSize : MINIMUM_PAGE_SIZE;
     const page = query.page >= MINIMUM_PAGE ? query.page : MINIMUM_PAGE;
