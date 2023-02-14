@@ -91,10 +91,13 @@
     "template",
     "microservice"
   ],
+  "exports": {
+    "./.build": "./"
+  },
   "files": [
     ".build/**/*",
     "bin",
     "LICENSE",
-    "README.md"
+    "README"
   ]
 }
