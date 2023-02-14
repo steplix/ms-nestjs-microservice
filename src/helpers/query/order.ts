@@ -1,5 +1,5 @@
 import { type QueryDto } from 'dto';
-import { OrderDirectionEnum } from 'enums';
+import { OrderDirectionEnum } from '../../enums';
 import { type Order } from 'sequelize';
 
 export const parseOrder = (query: QueryDto): Order | undefined => {

@@ -1,3 +1,4 @@
+export * from './query';
 export * from './validations';
 export * from './resolvers';
 export * from './tracking';
