@@ -15,7 +15,7 @@
     "test:coverage": "jest --coverage",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint && npm test",
-    "prepack": "echo 'module.exports = require('./.build');' >> index.js",
+    "prepack": "echo 'module.exports = require('./build');' >> index.js",
     "postpack": "rm index.js"
   },
   "repository": {
@@ -95,7 +95,7 @@
   ],
   "files": [
     "bin",
-    ".build",
+    "build",
     "index.js",
     "LICENSE",
     "README"
