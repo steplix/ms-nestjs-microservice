@@ -9,7 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2021",
     "outDir": "./build",
-    "baseUrl": "",
+    "baseUrl": "./src",
     "sourceMap": true,
     "inlineSources": true,
     "incremental": true,
