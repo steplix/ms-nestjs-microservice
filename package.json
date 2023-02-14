@@ -96,6 +96,7 @@
   "files": [
     "bin",
     ".build",
+    "index.js",
     "LICENSE",
     "README"
   ]
