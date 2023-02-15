@@ -69,32 +69,5 @@ describe('Health', () => {
 
             expect(await controller.healthCheck('')).toEqual(result);
         });
-
-        // -------------------------------------------------------------------------
-
-        it('should return an object with health check failure status', async () => {
-            const result: HealthEntity = {
-                alive: false,
-                name: pkg.name,
-                version: pkg.version,
-                environment: 'test',
-                info: {},
-                details: {
-                    database: {
-                        message: 'Connection provider not found in application context',
-                        status: 'down'
-                    }
-                },
-                error: {
-                    database: {
-                        message: 'Connection provider not found in application context',
-                        status: 'down'
-                    }
-                }
-            };
-
-            expect(await controller.healthCheck('database')).toEqual(result);
-        });
-
     });
 });

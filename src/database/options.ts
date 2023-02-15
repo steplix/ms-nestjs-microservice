@@ -1,12 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Inject } from '@nestjs/common';
 import { type SequelizeOptionsFactory, type SequelizeModuleOptions } from '@nestjs/sequelize';
-import { trues, falses } from '../constants';
+import { trues } from '../constants';
 
 /**
  * Indicate if Database feature is enabled
  */
-export const isDatabaseEnabled = !falses.includes(String(process.env.DB_ENABLED).toLowerCase());
+export const isDatabaseEnabled = trues.includes(String(process.env.DB_ENABLED).toLowerCase());
 
 /**
  * Indicate if Database debug queries is enabled
