@@ -8,6 +8,8 @@ import {
 } from '../../../src/server/modules/health';
 import { LoggerMock } from '../../mocks';
 
+const pkg = require('../../../package.json');
+
 describe('Health', () => {
     //
     // variables
@@ -60,8 +62,8 @@ describe('Health', () => {
         it('should return an object with health check success status', async () => {
             const result: HealthEntity = {
                 alive: true,
-                name: '@steplix/nestjs-microservice',
-                version: '1.0.0',
+                name: pkg.name,
+                version: pkg.version,
                 environment: 'test'
             };
 
@@ -73,8 +75,8 @@ describe('Health', () => {
         it('should return an object with health check failure status', async () => {
             const result: HealthEntity = {
                 alive: false,
-                name: '@steplix/nestjs-microservice',
-                version: '1.0.0',
+                name: pkg.name,
+                version: pkg.version,
                 environment: 'test',
                 info: {},
                 details: {
