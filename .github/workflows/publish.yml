@@ -12,8 +12,8 @@ jobs:
   master:
     uses: steplix/cicd-steplix/.github/workflows/pkg-publish.yml@main
     with:
-      NODE_VERSION: '${{ vars.NODE_VERSION }}'
-      SLACK_CHANNEL: '${{ vars.SLACK_CHANNEL }}'
+      NODE_VERSION: ${{ vars.NODE_VERSION }}
+      SLACK_CHANNEL: ${{ vars.SLACK_CHANNEL }}
     secrets:
       SLACK_WEBHOOK_URL: '${{ secrets.SLACK_WEBHOOK }}'
       NPM_TOKEN: '${{ secrets.NPM_TOKEN }}'
