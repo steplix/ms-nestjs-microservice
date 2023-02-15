@@ -1,4 +1,4 @@
-import { isNumber } from '../../../helpers/validations';
+import { isNumber } from '../../../src/helpers/validations';
 
 describe('validations', () => {
 

@@ -8,7 +8,7 @@
     "steplix-db-install": "./bin/steplix-db-install.js"
   },
   "scripts": {
-    "build": "tsc && rm -R -f dist/tests",
+    "build": "tsc && rm -R -f dist/tests && cd dist/src/ && cp -r ./ ../ && cd ../ && rm -R src/",
     "lint": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\"",
     "lint:fix": "eslint \"**/*.ts\" \"bin/steplix-db-install.js\" --fix",
     "test": "jest --clearCache && jest",
