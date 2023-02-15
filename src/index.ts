@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 export * as constants from './constants';
 export * from './interceptors';
 export * from './decorators';
